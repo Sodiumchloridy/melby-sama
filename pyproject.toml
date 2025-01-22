@@ -1,0 +1,22 @@
+[project]
+name = "neuro-sama"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Sodiumchloridy",email = "67376832+Sodiumchloridy@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = "^3.12"
+dependencies = [
+    "python-dotenv (>=1.0.1,<2.0.0)",
+    "google-genai (>=0.5.0,<0.6.0)",
+    "pyaudio (>=0.2.14,<0.3.0)",
+    "azure-cognitiveservices-speech (>=1.42.0,<2.0.0)",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
