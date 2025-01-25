@@ -6,3 +6,4 @@ poetry.lock
 __pycache__/
 # just my file for testing lol
 test.py
+client_secret.json
