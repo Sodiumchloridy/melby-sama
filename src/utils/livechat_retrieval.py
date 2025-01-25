@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 class YouTubeLiveChat:
-    def __init__(self, api_key):
+    def __init__(self):
         """
         Initialize the YouTubeLiveChat class with the YouTube Data API key.
         """
@@ -21,42 +21,30 @@ class YouTubeLiveChat:
             credentials = flow.run_local_server(port=8080)
 
             self.youtube = build('youtube', 'v3', credentials=credentials)
-            # self.youtube = build('youtube', 'v3', developerKey=api_key) # API Key don't work need OAuth
+            
         except KeyboardInterrupt:
-            print("Exiting...")
+            print("Exiting... YoutubeLiveChat")
             exit()
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred in YoutubeLiveChat: {e}")
 
     def get_channel_id(self, identifier):
         """
         Get the channel ID for a specific YouTube identifier.
-        This can be a username (legacy), a handle (@username), or a channel ID.
+        This is a handle (@username)
         """
-        if identifier.startswith('@'):
-            # Handle case
-            request = self.youtube.search().list(
-                part="snippet",
-                q=identifier,
-                type="channel",
-                maxResults=1
-            )
-            response = request.execute()
-            if response['items']:
-                return response['items'][0]['snippet']['channelId']
-            else:
-                raise ValueError("Channel not found for handle.")
+        request = self.youtube.search().list(
+            part="snippet",
+            q=identifier,
+            type="channel",
+            maxResults=1
+        )
+        response = request.execute()
+        if response['items']:
+            return response['items'][0]['snippet']['channelId']
         else:
-            # Assume legacy username or direct channel ID
-            request = self.youtube.channels().list(
-                part="id",
-                forUsername=identifier
-            )
-            response = request.execute()
-            if response['items']:
-                return response['items'][0]['id']
-            else:
-                raise ValueError("Channel not found for username or ID.")
+            raise ValueError("Channel not found for handle.")
+
 
     def get_live_broadcast_id(self, channel_id):
         """
@@ -107,26 +95,40 @@ class YouTubeLiveChat:
             pageToken=next_page_token # Continue from the last page token (if any)
         )
         response = request.execute()
-        print(f"size: {len(response['items'])}")
-        
-        # print(f"response: {response['items'][-5:]}")
-        # Get the last 5 messages in the response
-        latest_messages_amount = 5
-        for message in response['items'][-latest_messages_amount:]:
-            author = message['authorDetails']['displayName']
-            text = message['snippet']['displayMessage']
-            print(f"{author}: {text}")
+        # print(f"size: {len(response['items'])}")
+        res_size = len(response['items'])
+        # Get index limit based on res_size
+        if res_size < 5:
+            latest_messages_amount = res_size
+        else:
+            latest_messages_amount = 5
 
-        return response.get('nextPageToken', None)
+        return res_size, response.get('nextPageToken', None), response['items'][-latest_messages_amount:] # return tuple of msg amount, next_page_token and items
+    
+    def obtain_livechat_id(self, identifier):
+        # Step 1: Get the channel ID for the identifier
+        channel_id = self.get_channel_id(identifier)
+        # print(f"Channel ID: {channel_id}")
+
+        # Step 2: Get the live video ID for the channel
+        video_id = self.get_live_broadcast_id(channel_id)
+
+        if not video_id:
+            print("No active live broadcasts found.")
+        else:
+            # Step 3: Get the live chat ID for the broadcast
+            live_chat_id = self.get_live_chat_id(video_id)
+            # print(f"Live Chat ID: {live_chat_id}")
+
+        return live_chat_id
+
+   
 
 if __name__ == "__main__":
-    # Replace with your API key
-    API_KEY = os.getenv("GEMINI_API_KEY")
-
-    # Replace with your target identifier (e.g., @handle, username, or channel ID)
-    # IDENTIFIER = input("Enter the YouTube identifier: ")
-    IDENTIFIER = "@LofiGirl"
-    yt_chat = YouTubeLiveChat(API_KEY)
+    # Replace with your target identifier (e.g., @handle, username, or channel ID, e.g @LofiGirl)
+    IDENTIFIER = input("Enter the YouTube identifier: ")
+    
+    yt_chat = YouTubeLiveChat()
 
     try:
         # Step 1: Get the channel ID for the identifier
@@ -146,8 +148,8 @@ if __name__ == "__main__":
             next_page_token = None
             while True:
                 next_page_token = yt_chat.fetch_live_chat_messages(live_chat_id, next_page_token)
-                time.sleep(5)  # Wait for 5 seconds before the next request
-
+                time.sleep(10)  # Wait for 10 seconds before the next request
+        
     except KeyboardInterrupt:
         print("Exiting...")
     except Exception as e:
