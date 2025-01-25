@@ -17,7 +17,7 @@ video_handler = VideoHandler()
 def handle_chat():
     try:
         while True:
-            user_input = input("Enter your message: ")
+            user_input = audio_handler.record_from_microphone()
             video_handler.stop_recording()
             file = client.files.upload(path=video_handler.video_path)
             video_handler.start_recording()
