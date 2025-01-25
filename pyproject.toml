@@ -16,6 +16,8 @@ dependencies = [
     "google-api-python-client (>=2.159.0,<3.0.0)",
     "google-auth-oauthlib (>=1.2.1,<2.0.0)",
     "google-auth-httplib2 (>=0.2.0,<0.3.0)",
+    "mss (>=10.0.0,<11.0.0)",
+    "opencv-python (>=4.11.0.86,<5.0.0.0)",
 ]
 
 [build-system]
