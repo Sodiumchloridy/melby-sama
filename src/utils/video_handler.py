@@ -51,7 +51,6 @@ class VideoHandler:
 
             if self.video and self.video.isOpened():
                 self.video.release()
-            cv2.destroyAllWindows()
 
     def start_recording(self):
         """Start recording in background thread"""
