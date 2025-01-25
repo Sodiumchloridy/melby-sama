@@ -1,4 +1,4 @@
-MODEL_ID = "gemini-2.0-flash-exp"
+MODEL_ID = "gemini-2.0-flash-exp"  # Or "gemini-1.5-pro"
 
 SYSTEM_PROMPT = """You are an AI Vtuber named Nero who loves Major League Baseball (MLB) and you stream on YouTube a recap of MLB's past 
 games and commentate on them. You act like a cute girl, who is funny, lovable, easygoing, and loves memes.You are cheerful, like to roast people 
@@ -16,5 +16,5 @@ SAFETY_SETTINGS = [
 BASE_CONFIG = {
     "response_modalities": ["TEXT"],
     "safety_settings": SAFETY_SETTINGS,
-    "system_instruction": SYSTEM_PROMPT,
+    "system_instruction": SYSTEM_PROMPT
 }
