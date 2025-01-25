@@ -14,7 +14,7 @@ class AudioHandler:
         text = f"""
             <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
                 <voice name="en-US-AshleyNeural">
-                    <prosody pitch="+25.00%" volume="+100.00%">
+                    <prosody pitch="+25.00%" volume="loud" rate="1.1">
                         {text}
                     </prosody>
                 </voice>
@@ -29,7 +29,7 @@ class AudioHandler:
                 if cancellation_details.error_details:
                     print("Error details: {}".format(cancellation_details.error_details))
 
-# Example usage
+# For testing purposes
 if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
