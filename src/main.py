@@ -9,12 +9,6 @@ from utils.livechat_retrieval import YouTubeLiveChat
 from utils.audio_handler import AudioHandler
 from utils.video_handler import VideoHandler
 
-generation_config = {
-    "max_output_tokens": 8192,
-    "temperature": 2,
-    "top_p": 0.95,
-}
-
 def handle_chat():
     try:
         while True:
@@ -85,6 +79,14 @@ def main():
     global client, chat, audio_handler, video_handler, yt_chat
 
     client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"), http_options={'api_version': 'v1alpha'})
+    
+    # client = genai.Client(
+    #     vertexai=True,
+    #     project="gglxmlb-448010", 
+    #     location="asia-southeast1", 
+    #     api_key=os.getenv("GEMINI_API_KEY")
+    # )
+    
     chat = client.chats.create(model=MODEL_ID, config=BASE_CONFIG)
     audio_handler = AudioHandler()
     video_handler = VideoHandler()
