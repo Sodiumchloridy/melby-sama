@@ -54,7 +54,7 @@ class AudioHandler:
             return speech_recognition_result.text
         elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
             print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
-            return "**Says nothing.**"
+            return "Continue talking on your own." # self prompt if no live chat message
         elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
             cancellation_details = speech_recognition_result.cancellation_details
             print("Speech Recognition canceled: {}".format(cancellation_details.reason))
@@ -69,3 +69,4 @@ if __name__ == "__main__":
 
     audio = AudioHandler()
     audio.speak("Hello, this is Nero-sama.")
+    audio.record_from_microphone()
