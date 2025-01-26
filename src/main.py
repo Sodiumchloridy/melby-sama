@@ -1,5 +1,6 @@
 import os
 import time
+import re
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
@@ -15,30 +16,42 @@ def handle_chat():
             user_input = audio_handler.record_from_microphone()
             video_handler.stop_recording()
             file = client.files.upload(path=video_handler.video_path)
-            video_handler.start_recording()
-
-            while client.files.get(name=file.name).state != "ACTIVE":
-                print("Uploading file...")
-                time.sleep(1)  # Poll every 5 seconds
+            # video_handler.start_recording()
+            
+            # while client.files.get(name=file.name).state != "ACTIVE":
+            #     print("Uploading file...")
+            #     time.sleep(1)  # Poll every 5 seconds
 
             message = types.Content(
                 role="user",
                 parts=[
                     types.Part.from_text(user_input),
-                    types.Part.from_uri(file_uri=file.uri, mime_type="video/mp4")
+                    # types.Part.from_uri(file_uri=file.uri, mime_type="video/mp4")
                 ]
             )
 
             response = chat.send_message(message)
-            print(f"Nero-sama: {response.text}")
-            audio_handler.speak(response.text)
+            response_text = response.text
+            print(f"tagged response: {response_text}")
+            # Added regex to remove speak tag (MUST not remove or audio will gg) (e.g <speak>text</speak> -> text)
+            # if want remove all tags use r"<.*?>"
+            # tagless_res =   re.sub(r"<.*?>", "", response_text)
+            speak_tagless_res =   re.sub(r"</?speak>", "", response_text)  
+            # Added regex to remove prosody pitch tag cus it ruins nero voice (e.g <prosody pitch="x">text</prosody> -> <prosody >text</prosody>)
+            prosody_pitchless_res =   re.sub(r'pitch=".*?"', "", speak_tagless_res)
+
+            print(f"Nero-sama: {prosody_pitchless_res}")
+            audio_handler.speak(prosody_pitchless_res)
 
     except KeyboardInterrupt:
         print("Exiting chat...")
 
 def live_chat(identifier = '@LofiGirl'):
-    # Replace with your channel identifier (e.g., @handle, username, or channel ID, e.g @LofiGirl)
-    # identifier = input("Enter the YouTube identifier: ")
+    """
+    
+    Pass your channel identifier (e.g., @handle, e.g @LofiGirl)
+    """
+    
     live_chat_id = yt_chat.obtain_livechat_id(identifier)
     next_page_token = None
     try:
@@ -58,14 +71,14 @@ def live_chat(identifier = '@LofiGirl'):
                     user_input = user_input + live_chat + "\n"
                 print(f"live chat: {user_input}")
             else:
-                user_input = "continue talking on your own" # self prompt if no live chat message
+                user_input = "Continue talking on your own" # self prompt if no live chat message
                 print("Self prompted response")
 
             response = chat.send_message(user_input)
 
             audio_handler.speak(response.text) # comment out if not testing/using audio to save API credit
-            # Not rlly necessary when Nero talks alot with TTS since average is like 2 min per response for this whole loop
-            time.sleep(3) # Delay to prevent hitting API rate limit (hopefully) 
+            # Not rlly necessary when Nero talks long with TTS since average is like 2 min per response
+            time.sleep(1) # Delay to prevent hitting API rate limit (hopefully) 
             # Time the loop
             end = time.time() 
             print(f"Total runtime of the program is {end - begin}s") 
@@ -90,11 +103,11 @@ def main():
     chat = client.chats.create(model=MODEL_ID, config=BASE_CONFIG)
     audio_handler = AudioHandler()
     video_handler = VideoHandler()
-    yt_chat = YouTubeLiveChat()
+    # yt_chat = YouTubeLiveChat()
 
-    video_handler.start_recording()
+    # video_handler.start_recording()
     handle_chat()
-    video_handler.stop_recording()
+    # video_handler.stop_recording()
 
     # live_chat()
 

@@ -31,7 +31,7 @@ class YouTubeLiveChat:
     def get_channel_id(self, identifier):
         """
         Get the channel ID for a specific YouTube identifier.
-        This is a handle (@username)
+        This is a handle (@LofiGirl)
         """
         request = self.youtube.search().list(
             part="snippet",
@@ -106,6 +106,9 @@ class YouTubeLiveChat:
         return res_size, response.get('nextPageToken', None), response['items'][-latest_messages_amount:] # return tuple of msg amount, next_page_token and items
     
     def obtain_livechat_id(self, identifier):
+        """
+        Get all IDs needed to fetch live chat messages by inputing the identifier.
+        """
         # Step 1: Get the channel ID for the identifier
         channel_id = self.get_channel_id(identifier)
         # print(f"Channel ID: {channel_id}")
@@ -125,7 +128,7 @@ class YouTubeLiveChat:
    
 
 if __name__ == "__main__":
-    # Replace with your target identifier (e.g., @handle, username, or channel ID, e.g @LofiGirl)
+    # Replace with your target identifier (e.g., @handle e.g @LofiGirl)
     IDENTIFIER = input("Enter the YouTube identifier: ")
     
     yt_chat = YouTubeLiveChat()
