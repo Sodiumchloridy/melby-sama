@@ -1,11 +1,11 @@
 import os
 import time
-from utils.audio_handler import AudioHandler
-from utils.livechat_retrieval import YouTubeLiveChat
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+
 from config import MODEL_ID, BASE_CONFIG
+from utils.livechat_retrieval import YouTubeLiveChat
 from utils.audio_handler import AudioHandler
 from utils.video_handler import VideoHandler
 
@@ -42,12 +42,9 @@ def handle_chat():
     except KeyboardInterrupt:
         print("Exiting chat...")
 
-def livestream():
-        # Replace with your channel identifier (e.g., @handle, username, or channel ID, e.g @LofiGirl)
+def live_chat(identifier = '@LofiGirl'):
+    # Replace with your channel identifier (e.g., @handle, username, or channel ID, e.g @LofiGirl)
     # identifier = input("Enter the YouTube identifier: ")
-    identifier = '@LofiGirl'
-
-    yt_chat = YouTubeLiveChat()
     live_chat_id = yt_chat.obtain_livechat_id(identifier)
     next_page_token = None
     try:
@@ -85,18 +82,19 @@ def livestream():
 
 def main():
     load_dotenv()
-    global client, chat, audio_handler, video_handler
+    global client, chat, audio_handler, video_handler, yt_chat
 
     client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"), http_options={'api_version': 'v1alpha'})
     chat = client.chats.create(model=MODEL_ID, config=BASE_CONFIG)
     audio_handler = AudioHandler()
     video_handler = VideoHandler()
+    yt_chat = YouTubeLiveChat()
 
-    # video_handler.start_recording()
-    # handle_chat()
-    # video_handler.stop_recording()
+    video_handler.start_recording()
+    handle_chat()
+    video_handler.stop_recording()
 
-    livestream()
+    # live_chat()
 
 if __name__ == "__main__":
     main()

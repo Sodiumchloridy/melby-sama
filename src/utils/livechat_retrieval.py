@@ -11,7 +11,7 @@ class YouTubeLiveChat:
         # Disable OAuthlib's HTTPS verification when running locally.
         # *DO NOT* leave this option enabled in production.
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-        CLIENT_SECRET_FILEPATH = "src\\utils\\client_secret.json"
+        CLIENT_SECRET_FILEPATH = r"src\utils\client_secret.json"
         try:
             #  lemme know ur email so u can go through the OAuth process
             flow = InstalledAppFlow.from_client_secrets_file(

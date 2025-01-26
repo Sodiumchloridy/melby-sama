@@ -11,19 +11,30 @@
 
 
 ## 1. Install Dependencies (Recommended)
-1. [Install Poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
+### 1. Install Poetry
+You can install Poetry by following the official [installation guide](https://python-poetry.org/docs/#installation).
 ```bash
 pip install poetry
 poetry config virtualenvs.in-project true # to create the virtual environment in the project directory
 ```
 
-2. Install Dependencies
-At the root of the project, run:
-```bash
-poetry install
+### 2. Setup the environment variables
+Create a `.env` file at the root of the project with the following variables:
+```env
+GEMINI_API_KEY=
+SPEECH_KEY=
+SPEECH_REGION=
 ```
+You can get your own `GEMINI_API_KEY` at [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-3. Run the project
+You can get the `SPEECH_KEY` and `SPEECH_REGION` by following the steps below:
+1. Sign up for an Azure free account at [https://azure.microsoft.com/free/cognitive-services](https://azure.microsoft.com/free/cognitive-services).
+2. [Create a Speech Services resource](https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices) in the Azure Portal.
+3. Get the `SPEECH_KEY` and `SPEECH_REGION` from the resource.
+
+For the YouTube API client_secret.json, you can get it at [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials). Create a OAuth 2.0 client ID and download the client_secret.json. Then, place it inside the `/utils` folder.
+
+### 3. Run the project
 At the root of the project, run:
 ```bash
 poetry run python src/main.py
