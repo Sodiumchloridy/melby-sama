@@ -1,5 +1,7 @@
 .venv/
 .env
+*.mp4
+
 # merging lock file kinda scuff sometimes so just autogen with pyproject
 poetry.lock
 .DS_Store
@@ -7,5 +9,3 @@ __pycache__/
 # just my file for testing lol
 test.py
 client_secret.json
-
-*.mp4
