@@ -105,7 +105,7 @@ class YouTubeLiveChat:
 
         return res_size, response.get('nextPageToken', None), response['items'][-latest_messages_amount:] # return tuple of msg amount, next_page_token and items
     
-    def obtain_livechat_id(self, identifier):
+    def obtain_livechat_id(self, identifier="@LofiGirl"):
         """
         Get all IDs needed to fetch live chat messages by inputing the identifier.
         """
