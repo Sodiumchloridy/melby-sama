@@ -32,7 +32,11 @@ You can get the `SPEECH_KEY` and `SPEECH_REGION` by following the steps below:
 2. [Create a Speech Services resource](https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices) in the Azure Portal.
 3. Get the `SPEECH_KEY` and `SPEECH_REGION` from the resource.
 
-For the YouTube API client_secret.json, you can get it at [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials). Create a OAuth 2.0 client ID and download the client_secret.json. Then, place it inside the `/utils` folder.
+For the YouTube API's `client_secret.json`, you can get it at [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials). Create a `OAuth 2.0 client ID` following this [YouTube example](https://www.youtube.com/watch?v=Q49gGXCCY_4), adding `Youtube Data APIv3` scopes below under `OAuth consent screen`:  
+- `https://www.googleapis.com/auth/youtube.force-ssl` 
+- `https://www.googleapis.com/auth/youtube.readonly`  
+
+After that, download the `client_secret.json`. Then, place it inside the [src/utils](https://github.com/Sodiumchloridy/nero-sama/tree/chatbot/src/utils) folder.
 
 ### 3. Run the project
 At the root of the project, run:
