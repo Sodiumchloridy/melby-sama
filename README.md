@@ -36,7 +36,7 @@ For the YouTube API's `client_secret.json`, you can get it at [https://console.c
 - `https://www.googleapis.com/auth/youtube.force-ssl` 
 - `https://www.googleapis.com/auth/youtube.readonly`  
 
-After that, download the `client_secret.json`. Then, place it inside the [src/utils](https://github.com/Sodiumchloridy/nero-sama/tree/chatbot/src/utils) folder.
+After that, download the `client_secret.json`. Then, place it inside the [/src/utils](/src/utils) folder.
 
 ### 3. Run the project
 At the root of the project, run:
