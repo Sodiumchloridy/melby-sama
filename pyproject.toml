@@ -18,6 +18,7 @@ dependencies = [
     "google-api-python-client (>=2.159.0,<3.0.0)",
     "google-auth-oauthlib (>=1.2.1,<2.0.0)",
     "google-auth-httplib2 (>=0.2.0,<0.3.0)",
+    "websockets (>=14.2,<15.0)",
 ]
 
 [build-system]

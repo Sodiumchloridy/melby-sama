@@ -1,98 +1,146 @@
+from dotenv import load_dotenv, set_key
 import asyncio
+import os
 import websockets
 import json
 
+"""
+NOTE: How the authentication persists is by using the same socket connection.therefore a global websocket connection is used.
+"""
+# Load environment variables
+load_dotenv()
 
 class VTubeStudioHandler:
-    def __init__(self, server_uri="ws://localhost:8001"):
+    def __init__(self, server_uri="ws://localhost:8001", env_file=".env"):
         self.server_uri = server_uri
+        self.env_file = env_file
         self.keyword_to_expression = {
-            "smile": "smileExpression.exp3.json",
-            "angry": "angryExpression.exp3.json",
-            "surprised": "surprisedExpression.exp3.json",
-            "sad": "sadExpression.exp3.json"
+            "blink": "left eye blink.exp3.json",
         }
 
-    def check_keywords(self, input_string):
+    async def websocket_session(self):
+        async with websockets.connect(self.server_uri) as websocket:
+            await self.auth_handler(websocket)
+            await self.check_api_status(websocket)
+            
+    async def get_auth_token(self, websocket):
         """
-        Checks for keywords in the input string and returns a list of matches.
+        Requests a new authentication token and saves it to .env.
         """
-        return [word for word in self.keyword_to_expression if word in input_string.lower()]
-
-    def create_request_payload(self, expression_file, fade_time, active, request_id=None):
-        """
-        Constructs the payload for the WebSocket request.
-        """
-        return {
+        req_body = {
             "apiName": "VTubeStudioPublicAPI",
             "apiVersion": "1.0",
-            "requestID": request_id or "DefaultID",
-            "messageType": "ExpressionActivationRequest",
+            "requestID": "NeroSamaPlugin",
+            "messageType": "AuthenticationTokenRequest",
             "data": {
-                "expressionFile": expression_file,
-                "fadeTime": fade_time,
-                "active": active
-            }
+                "pluginName": "NeroSamaPlugin",
+                "pluginDeveloper": "NeroSama",
+            },
         }
+        res = await self.send_message_to_websocket(websocket, req_body)
 
-    async def send_message_to_websocket(self, payload):
-        """
-        Sends the given payload to the WebSocket server and waits for a response.
-        """
-        try:
-            async with websockets.connect(self.server_uri) as websocket:
-                message = json.dumps(payload)
-                print(f"Sending message: {message}")
-                await websocket.send(message)
+        if res:
+            auth_token = res['data'].get('authenticationToken')
+            if auth_token:
+                set_key(self.env_file, "VTUBE_STUDIO_AUTH_TOKEN", auth_token)
+                os.environ["VTUBE_STUDIO_AUTH_TOKEN"] = auth_token
+                print("Auth token acquired and saved to .env")
+            return auth_token
+        return None
 
-                # Await response
-                response = await websocket.recv()
-                print(f"Response from server: {response}")
-                return response
-        except Exception as e:
-            print(f"Error connecting to WebSocket: {e}")
+    async def auth(self, websocket):
+        """
+        Authenticates using the saved auth token.
+        """
+        auth_token = os.getenv("VTUBE_STUDIO_AUTH_TOKEN")
+
+        if not auth_token:
+            print("No auth token found. Requesting a new one.")
+            auth_token = await self.get_auth_token(websocket)
+            if not auth_token:
+                print("Failed to acquire authentication token.")
+                return None
+
+        req_body = {
+            "apiName": "VTubeStudioPublicAPI",
+            "apiVersion": "1.0",
+            "requestID": "NeroSamaPlugin",
+            "messageType": "AuthenticationRequest",
+            "data": {
+                "pluginName": "NeroSamaPlugin",
+                "pluginDeveloper": "NeroSama",
+                "authenticationToken": auth_token,
+            },
+        }
+        res = await self.send_message_to_websocket(websocket, req_body)
+        if res:
+            print("Authenticated successfully.")
+            return res
+        else:
+            print("Authentication failed.")
             return None
 
-    def handle_user_input(self):
+    async def check_api_status(self, websocket):
         """
-        Handles user input, processes keywords, and sends a request to the WebSocket server.
+        Checks the WebSocket API status.
         """
-        user_input = input("Enter a string: ")
-        found_keywords = self.check_keywords(user_input)
+        req_body = {
+            "apiName": "VTubeStudioPublicAPI",
+            "apiVersion": "1.0",
+            "messageType": "APIStateRequest",
+        }
+        return await self.send_message_to_websocket(websocket, req_body)
 
-        if found_keywords:
-            print(f"Found keywords: {', '.join(found_keywords)}")
+    async def auth_handler(self, websocket):
+        """
+        Ensures the user is authenticated:
+        - If first-time user, request an authentication token and authenticate.
+        - If token exists, attempt authentication. If it fails, request a new token and retry authentication.
+        """
+        res = await self.check_api_status(websocket)
 
-            # Use the first keyword found
-            keyword = found_keywords[0]
-            expression_file = None
+        if res and res['data'].get('currentSessionAuthenticated'):
+            print("Session is already authenticated.")
+            return
 
-            # Map keyword to expression file
-            match keyword:
-                case "smile":
-                    expression_file = self.keyword_to_expression["smile"]
-                case "angry":
-                    expression_file = self.keyword_to_expression["angry"]
-                case "surprised":
-                    expression_file = self.keyword_to_expression["surprised"]
-                case "sad":
-                    expression_file = self.keyword_to_expression["sad"]
+        auth_token = os.getenv("VTUBE_STUDIO_AUTH_TOKEN")
 
-            if expression_file:
-                fade_time = float(input("Enter the fade time (e.g., 0.5): "))
-                active = input("Activate expression? (true/false): ").strip().lower() == "true"
-                request_id = input("Enter request ID (optional, press Enter to skip): ").strip() or None
+        if auth_token:
+            print("Attempting authentication with saved token...")
+            auth_response = await self.auth(websocket)
 
-                # Create the request payload
-                payload = self.create_request_payload(expression_file, fade_time, active, request_id)
-
-                # Run the WebSocket communication
-                asyncio.run(self.send_message_to_websocket(payload))
+            if not auth_response:
+                print("Authentication failed. Requesting a new token.")
+                new_token = await self.get_auth_token(websocket)
+                if new_token:
+                    await self.auth(websocket)
         else:
-            print("No keywords found.")
+            print("No authentication token found. Requesting new authentication.")
+            new_token = await self.get_auth_token(websocket)
+            if new_token:
+                await self.auth(websocket)
 
+    async def send_message_to_websocket(self, websocket, payload):
+        """
+        Sends a request to the WebSocket server and awaits a response.
+        """
+        try:
+            message = json.dumps(payload, indent=4)
+            print(f"Sending message: {message}\n")
+            await websocket.send(message)
+
+            response = await websocket.recv()
+            parsed_res = json.loads(response)
+            print(f"Response from server: {json.dumps(parsed_res, indent=4)}\n")
+            return parsed_res
+        except Exception as e:
+            print(f"Error during WebSocket communication: {e}")
+            return None
 
 # Main execution
-if __name__ == "__main__":
+async def main():
     handler = VTubeStudioHandler()
-    handler.handle_user_input()
+    await handler.websocket_session()
+
+if __name__ == "__main__":
+    asyncio.run(main())
