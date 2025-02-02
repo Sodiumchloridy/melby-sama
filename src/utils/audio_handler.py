@@ -35,16 +35,7 @@ class AudioHandler:
                 if cancellation_details.error_details:
                     print("Error details: {}".format(cancellation_details.error_details))
 
-    def record_from_microphone(self, initial_silence_timeout=15, end_silence_timeout=5):
-        self.speech_config.set_property(
-            speechsdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, 
-            str(initial_silence_timeout * 1000)
-        )
-        self.speech_config.set_property(
-            speechsdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs, 
-            str(end_silence_timeout * 1000)
-        )
-
+    def record_from_microphone(self):
         print("Speak into your microphone.")
         speech_recognition_result = self.speech_recognizer.recognize_once_async().get()
 

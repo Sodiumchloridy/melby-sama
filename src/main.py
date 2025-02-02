@@ -9,6 +9,7 @@ from config import MODEL_ID, BASE_CONFIG
 from utils.livechat_retrieval import YouTubeLiveChat
 from utils.audio_handler import AudioHandler
 from utils.video_handler import VideoHandler
+from utils.subtitle import generate_subtitle
 
 def main_loop(live_chat_id):
     """
@@ -41,7 +42,8 @@ def main_loop(live_chat_id):
 
             response_text = re.sub(r'(</?speak>|pitch=".*?")', "", response.text)
             clean_text = re.sub(r'<[^>]+>', '', response_text)
-            print(f"Melby-sama: {clean_text}")
+            print(f"Melby-sama: {clean_text}") # TODO - Remove this line after testing
+            generate_subtitle("output.txt", clean_text)
 
             audio_handler.speak(response_text)
             video_handler.start_recording()
