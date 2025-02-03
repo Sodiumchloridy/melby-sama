@@ -1,8 +1,10 @@
 from google.genai import types
+import os
 
 MODEL_ID = "gemini-2.0-flash-exp"  # Eg: "gemini-2.0-flash-exp" or "gemini-1.5-pro"
 
-with open('lore.txt', 'r') as file:
+CONFIG_DIR = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(CONFIG_DIR, 'lore.txt'), 'r') as file:
     SYSTEM_PROMPT = file.read().rstrip()
 
 SAFETY_SETTINGS = [

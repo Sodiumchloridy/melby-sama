@@ -6,6 +6,9 @@
 poetry.lock
 .DS_Store
 __pycache__/
+
 # just my file for testing lol
 test.py
 client_secret.json
+
+temp/
