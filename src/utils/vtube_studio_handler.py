@@ -1,22 +1,19 @@
 from dotenv import load_dotenv, set_key
-import time
 import asyncio
 import os
 import websockets
 import json
 
-# Load environment variables
-
 
 class VTubeStudioHandler:
     def __init__(self, server_uri="ws://localhost:8001", env_file=".env"):
-        load_dotenv()
         self.server_uri = server_uri
         self.env_file = env_file
         # exp3.json file can be created in Vtube Studio App in settings -> hotkeys settings and expression -> expression editor, then create new hotkeys for the expression
         self.keyword_to_expression = {
-            "blink": "left eye blink.exp3.json",
+            "wink": "wink",
         }
+        self.websocket = None
 
     # Open a websocket connection that will be shared across all methods and the session will be authenticated to use more API options
     async def websocket_session(self):
@@ -136,8 +133,9 @@ class VTubeStudioHandler:
         message = json.dumps(payload, indent=4)
         print(f"Sending message: {message}\n")
         await websocket.send(message)
-
+        print("Message sent.")
         response = await websocket.recv()
+        print("Received response")
         parsed_res = json.loads(response)
         print(f"Response from server: {json.dumps(parsed_res, indent=4)}\n")
         return parsed_res
@@ -146,16 +144,26 @@ class VTubeStudioHandler:
         """
         Trigger hotkey using hotkey name which is the name given to motion or expression under hotkey settings
         """
+        # reset_hotkey = {
+        #     "apiName": "VTubeStudioPublicAPI",
+        #     "apiVersion": "1.0",
+        #     "requestID": "NeroSama",
+        #     "messageType": "HotkeyTriggerRequest",
+        #     "data": {
+        #         "hotkeyID": "Remove Expressions",
+        #     },
+        # }
+        # await self.send_message_to_websocket(websocket, reset_hotkey)
         req_body = {
             "apiName": "VTubeStudioPublicAPI",
             "apiVersion": "1.0",
-            "requestID": "SomeID",
+            "requestID": "NeroSama",
             "messageType": "HotkeyTriggerRequest",
             "data": {
                 "hotkeyID": hotkey_name,
             },
         }
-        return await self.send_message_to_websocket(websocket, req_body)
+        await self.send_message_to_websocket(websocket, req_body)
 
     async def list_hotkeys(self, websocket):
         """
@@ -164,7 +172,7 @@ class VTubeStudioHandler:
         req_body = {
             "apiName": "VTubeStudioPublicAPI",
             "apiVersion": "1.0",
-            "requestID": "SomeID",
+            "requestID": "NeroSama",
             "messageType": "HotkeysInCurrentModelRequest",
         }
         return await self.send_message_to_websocket(websocket, req_body)
@@ -172,6 +180,8 @@ class VTubeStudioHandler:
 
 # Main execution
 async def main():
+    load_dotenv()
+
     handler = VTubeStudioHandler()
     websocket = await handler.websocket_session()
 

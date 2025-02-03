@@ -1,6 +1,10 @@
+import time
 import azure.cognitiveservices.speech as speechsdk
+from dotenv import load_dotenv
+import asyncio
 import os
-import threading
+from utils.vtube_studio_handler import VTubeStudioHandler
+import concurrent.futures
 
 class AudioHandler:
     def __init__(self):
@@ -8,13 +12,19 @@ class AudioHandler:
         self.speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
         audio_output_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
         self.speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=self.speech_config, audio_config=audio_output_config)
-        
+        # Attach event handler to trigger Vtube Studio expression
+        self.speech_synthesizer.synthesis_word_boundary.connect(self.on_word_boundary)
+
         # For speech recognition
         self.speech_config.speech_recognition_language="en-US"
         audio_input_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
         self.speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self.speech_config, audio_config=audio_input_config)
 
-    
+        # Init Vtube Studio handler
+        self.vtube_studio_handler = VTubeStudioHandler()
+        self.pool = concurrent.futures.ThreadPoolExecutor()
+
+
     def speak(self, text):
         self.speech_synthesizer.stop_speaking()
 
@@ -62,11 +72,29 @@ class AudioHandler:
                 print("Error details: {}".format(cancellation_details.error_details))
                 print("Did you set the speech resource key and region values?")
 
+    def on_word_boundary(self, evt):
+        """Trigger expression in VTube Studio when a keyword is spoken."""
+        word = evt.text.lower()
+        keyword_to_expression = self.vtube_studio_handler.keyword_to_expression
+
+        if word in keyword_to_expression:
+            expression = keyword_to_expression[word]
+            print(f"Triggering expression: {expression} for word: {word}")
+            # Run the hotkey_execution in a separate thread (kinda scuff but works)
+
+            self.pool.submit(asyncio.run, self.vtube_studio_handler.hotkey_execution(self.vtube_studio_handler.websocket, expression))
+
+
+async def main():
+    load_dotenv()
+    audio = AudioHandler()
+    # create websocket session instance
+    await audio.vtube_studio_handler.websocket_session()
+    while True:
+        user_input = input("Enter text: ")
+        audio.speak(user_input)
+
+
 # For testing purposes
 if __name__ == "__main__":
-    from dotenv import load_dotenv
-    load_dotenv()
-
-    audio = AudioHandler()
-    audio.speak("Hello, this is Nero-sama.")
-    audio.record_from_microphone()
+    asyncio.run(main())

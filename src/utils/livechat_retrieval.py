@@ -107,7 +107,7 @@ class YouTubeLiveChat:
     
     def obtain_livechat_id(self, identifier="@LofiGirl"):
         """
-        Get all IDs needed to fetch live chat messages by inputing the identifier.
+        Get all IDs needed to fetch live chat messages using Youtube channel's handle, e.g. @LofiGirl.
         """
         # Step 1: Get the channel ID for the identifier
         channel_id = self.get_channel_id(identifier)
