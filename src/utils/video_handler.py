@@ -4,56 +4,50 @@ from time import time, sleep
 import cv2
 import numpy as np
 import os
+from collections import deque
 
 from config import ROOT_DIR
 
 class VideoHandler:
     def __init__(self):
-        self.monitor = None  # Will be initialized in thread
         self.fps = 1 # Gemini only supports 1 fps
-        self.video = None
         self.recording_thread = None
         self.stop_event = threading.Event()
         self.video_path = os.path.join(ROOT_DIR, "temp", "screen_capture.mp4")
+        self.frames = deque(maxlen=10)
 
     def _capture_loop(self):
         """Thread-safe capture loop"""
         # Initialize MSS and OpenCV in the same thread
         with mss.mss() as sct:
-            self.monitor = sct.monitors[-1]
-            frame_size = (self.monitor['width']//2, self.monitor['height']//2)
-            
-            self.video = cv2.VideoWriter(
-                self.video_path,
-                cv2.VideoWriter.fourcc(*'mp4v'),
-                self.fps,
-                frame_size
-            )
-
-            frame_delta = 1.0 / self.fps
-            next_frame = time()
+            monitor = sct.monitors[-1]
             
             while not self.stop_event.is_set():
                 try:
                     # Capture frame
-                    img = sct.grab(self.monitor)
+                    img = sct.grab(monitor)
                     img = np.array(img)
                     img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-                    small = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
-                    self.video.write(small)
-
-                    # Timing control
-                    now = time()
-                    if now < next_frame:
-                        sleep(next_frame - now)
-                    next_frame += frame_delta
+                    small_img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+                    self.frames.append(small_img)
+                    sleep(1)
 
                 except Exception as e:
                     print(f"Capture error: {str(e)}")
                     break
 
-            if self.video and self.video.isOpened():
-                self.video.release()
+            if self.frames:
+                height, width = self.frames[0].shape[:2]
+                video = cv2.VideoWriter(
+                    self.video_path, 
+                    cv2.VideoWriter.fourcc(*'mp4v'), 
+                    self.fps, 
+                    (width, height)
+                )
+                for frame in self.frames:
+                    video.write(frame)
+                if video and video.isOpened():
+                    video.release()
 
     def start_recording(self):
         """Start recording in background thread"""
