@@ -3,6 +3,9 @@ import mss
 from time import time, sleep
 import cv2
 import numpy as np
+import os
+
+from ..config import ROOT_DIR
 
 class VideoHandler:
     def __init__(self):
@@ -11,7 +14,7 @@ class VideoHandler:
         self.video = None
         self.recording_thread = None
         self.stop_event = threading.Event()
-        self.video_path = "screen_capture.mp4"
+        self.video_path = os.path.join(ROOT_DIR, "temp", "screen_capture.mp4")
 
     def _capture_loop(self):
         """Thread-safe capture loop"""
