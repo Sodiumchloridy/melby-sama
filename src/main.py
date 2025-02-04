@@ -12,7 +12,12 @@ from utils.video_handler import VideoHandler
 from utils.subtitle import clear_subtitle, generate_subtitle
 
 def main_loop():
+    live_video_id = "L639zifZP0U" # Live Video ID from YouTube
     try:
+        output_file = os.path.join(temp_dir, 'subtitles.txt')
+        generate_subtitle(output_file, "Hello, this is Melby-sama. Welcome to the stream!")
+        audio_handler.speak("Hello, this is Melby-sama. Welcome to the stream!")
+        video_handler.start_recording()
         while True:
             user_input = audio_handler.record_from_microphone()
             video_handler.stop_recording()
@@ -20,7 +25,7 @@ def main_loop():
                 file = client.files.upload(path=video_handler.video_path)
                 print("System: Uploading file...")
                 while client.files.get(name=file.name).state != "ACTIVE":
-                    time.sleep(1)  # Poll every 1 second
+                    time.sleep(0.5)  # Poll every 1 second
                 print("System: Upload complete!")
 
                 message = types.Content(
@@ -33,7 +38,7 @@ def main_loop():
                 response = chat.send_message(message)
 
             else:
-                user_input = YouTubeLiveChat.get_message("jfKfPfyJRdk")
+                user_input = YouTubeLiveChat.get_message(live_video_id)
                 if(user_input == None):
                     user_input = "Continue talking on your own"
                 user_input = re.sub(r':[^\s]+:', '', user_input)
@@ -42,12 +47,10 @@ def main_loop():
 
             response_text = re.sub(r'(</?speak>|pitch=".*?")', "", response.text)
             clean_text = re.sub(r'<[^>]+>', '', response_text)
-            print(f"Melby-sama: {clean_text}") # TODO - Remove this line after testing
+            print(f"Melby-sama: {clean_text}")
 
-            output_file = os.path.join(temp_dir, 'subtitles.txt')
             generate_subtitle(output_file, clean_text)
             audio_handler.speak(response_text)
-            time.sleep(1)
             clear_subtitle(output_file)
             video_handler.start_recording()
 
@@ -56,7 +59,11 @@ def main_loop():
     except Exception as e:
         print(f"System: An error occurred: {e}")
     finally:
+        audio_handler.speak("Goodbye everyone! I'm going to end the stream now. Thanks for coming guys.")
+        generate_subtitle(output_file, "Goodbye everyone! I'm going to end the stream now. Thanks for coming guys.")
         video_handler.stop_recording()
+        clear_subtitle(output_file)
+
 
 def main():
     # Init
@@ -70,10 +77,7 @@ def main():
     os.makedirs(temp_dir, exist_ok=True)
 
     # Melby-sama starts the stream
-    audio_handler.speak("Hello, this is Melby-sama. Welcome to the stream!")
-    video_handler.start_recording()
     main_loop()
-    audio_handler.speak("Goodbye everyone! I'm going to end the stream now. Thanks for coming guys.")
     print("System: Stream ended.")
 
 if __name__ == "__main__":
