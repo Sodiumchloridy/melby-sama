@@ -5,7 +5,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
-from .config import MODEL_ID, BASE_CONFIG, ROOT_DIR
+from config import MODEL_ID, BASE_CONFIG, ROOT_DIR
 from utils.livechat_retrieval import YouTubeLiveChat
 from utils.audio_handler import AudioHandler
 from utils.video_handler import VideoHandler

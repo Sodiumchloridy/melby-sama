@@ -5,12 +5,12 @@ import cv2
 import numpy as np
 import os
 
-from ..config import ROOT_DIR
+from config import ROOT_DIR
 
 class VideoHandler:
     def __init__(self):
         self.monitor = None  # Will be initialized in thread
-        self.fps = 1
+        self.fps = 1 # Gemini only supports 1 fps
         self.video = None
         self.recording_thread = None
         self.stop_event = threading.Event()
@@ -25,7 +25,7 @@ class VideoHandler:
             
             self.video = cv2.VideoWriter(
                 self.video_path,
-                cv2.VideoWriter_fourcc(*'mp4v'),
+                cv2.VideoWriter.fourcc(*'mp4v'),
                 self.fps,
                 frame_size
             )
