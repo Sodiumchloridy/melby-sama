@@ -1,5 +1,5 @@
 [project]
-name = "neuro-sama"
+name = "melby-sama"
 version = "0.1.0"
 description = ""
 authors = [
@@ -14,10 +14,7 @@ dependencies = [
     "azure-cognitiveservices-speech (>=1.42.0,<2.0.0)",
     "mss (>=10.0.0,<11.0.0)",
     "opencv-python (>=4.11.0.86,<5.0.0.0)",
-    "google-cloud-aiplatform (>=1.78.0,<2.0.0)",
-    "google-api-python-client (>=2.159.0,<3.0.0)",
-    "google-auth-oauthlib (>=1.2.1,<2.0.0)",
-    "google-auth-httplib2 (>=0.2.0,<0.3.0)",
+    "pytchat (>=0.5.5,<0.6.0)",
 ]
 
 [build-system]

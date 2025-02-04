@@ -1,6 +1,5 @@
 import azure.cognitiveservices.speech as speechsdk
 import os
-import threading
 
 class AudioHandler:
     def __init__(self):
@@ -36,16 +35,7 @@ class AudioHandler:
                 if cancellation_details.error_details:
                     print("Error details: {}".format(cancellation_details.error_details))
 
-    def record_from_microphone(self, initial_silence_timeout=15, end_silence_timeout=5):
-        self.speech_config.set_property(
-            speechsdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, 
-            str(initial_silence_timeout * 1000)
-        )
-        self.speech_config.set_property(
-            speechsdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs, 
-            str(end_silence_timeout * 1000)
-        )
-
+    def record_from_microphone(self):
         print("Speak into your microphone.")
         speech_recognition_result = self.speech_recognizer.recognize_once_async().get()
 
@@ -54,7 +44,7 @@ class AudioHandler:
             return speech_recognition_result.text
         elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
             print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
-            return "Continue talking on your own." # self prompt if no live chat message
+            return None
         elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
             cancellation_details = speech_recognition_result.cancellation_details
             print("Speech Recognition canceled: {}".format(cancellation_details.reason))
@@ -68,5 +58,5 @@ if __name__ == "__main__":
     load_dotenv()
 
     audio = AudioHandler()
-    audio.speak("Hello, this is Nero-sama.")
+    audio.speak("Hello, this is Melby-sama.")
     audio.record_from_microphone()
