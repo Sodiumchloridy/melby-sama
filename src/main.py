@@ -5,11 +5,11 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
-from config import MODEL_ID, BASE_CONFIG, ROOT_DIR
+from .config import MODEL_ID, BASE_CONFIG, ROOT_DIR
 from utils.livechat_retrieval import YouTubeLiveChat
 from utils.audio_handler import AudioHandler
 from utils.video_handler import VideoHandler
-from utils.subtitle import generate_subtitle
+from utils.subtitle import clear_subtitle, generate_subtitle
 
 def main_loop():
     try:
@@ -42,10 +42,11 @@ def main_loop():
             clean_text = re.sub(r'<[^>]+>', '', response_text)
             print(f"Melby-sama: {clean_text}") # TODO - Remove this line after testing
 
-            output_file = os.path.join(temp_dir, 'output.txt')
+            output_file = os.path.join(temp_dir, 'subtitles.txt')
             generate_subtitle(output_file, clean_text)
-
             audio_handler.speak(response_text)
+            time.sleep(1)
+            clear_subtitle(output_file)
             video_handler.start_recording()
 
     except KeyboardInterrupt:

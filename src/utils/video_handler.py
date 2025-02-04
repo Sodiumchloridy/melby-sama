@@ -64,11 +64,11 @@ class VideoHandler:
                 daemon=True
             )
             self.recording_thread.start()
-            print("Recording started")
+            print("System: Recording started")
 
     def stop_recording(self):
         """Signal thread to stop"""
         self.stop_event.set()
         if self.recording_thread:
             self.recording_thread.join(timeout=2)
-        print("Recording stopped")
+        print("System: Recording stopped")

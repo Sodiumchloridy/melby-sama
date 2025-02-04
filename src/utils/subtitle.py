@@ -12,3 +12,13 @@ def generate_subtitle(filename, text):
                 outfile.write(" ".join(line) + "\n")
         except:
             print(f"Error writing to {filename}")
+
+def clear_subtitle(filename):
+    """
+    Clear the subtitle file.
+    """
+    with open(filename, "w") as outfile:
+        try:
+            outfile.write("")
+        except:
+            print(f"Error clearing {filename}")
