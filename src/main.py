@@ -34,6 +34,8 @@ def main_loop():
 
             else:
                 user_input = YouTubeLiveChat.get_message("jfKfPfyJRdk")
+                if(user_input == None):
+                    user_input = "Continue talking on your own"
                 user_input = re.sub(r':[^\s]+:', '', user_input)
                 print(user_input)
                 response = chat.send_message(user_input)
