@@ -1,18 +1,29 @@
+![banner](https://github.com/user-attachments/assets/18014e27-a881-4ea0-924e-a7b0a3a944aa)
+
 <div align="center">
   <div>
     <h1 style="display: inline-block;">Melby-sama</h1>
   </div>
   <p align='center'>
   Melby-sama (MLB... Melby... get it?), an AI MLB VTuber and streamer powered by Google's Multimodal AI — the segue to our sponsor: the Google Cloud x MLB Hackathon, powered by Gemini!
-</p>
-
-[![forthebadge](https://forthebadge.com/images/featured/featured-built-with-love.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/featured/featured-powered-by-electricity.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/featured/featured-gluten-free.svg)](https://forthebadge.com)
-
-[![forthebadge](https://forthebadge.com/images/badges/ctrl-c-ctrl-v.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
-
+  </p>
+  
+  [![forthebadge](https://forthebadge.com/images/badges/ctrl-c-ctrl-v.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
 </div>
 
-## 1. Install Dependencies
+> This project is built for the [Google Cloud x MLB™ Hackathon – Building with Gemini Models](https://next2025challenge.devpost.com/)
+
+### 👀 Demo
+
+| [![](https://img.youtube.com/vi/Zxxj-QVYgow/maxresdefault.jpg)](https://www.youtube.com/watch?v=Zxxj-QVYgow) | ![](https://github.com/user-attachments/assets/1dd93eed-c3aa-4c42-9ee9-ac6e8c5dc1d9) |
+|:---:|:---:|
+| [Video Demo](https://www.youtube.com/watch?v=Zxxj-QVYgow) | Melby-sama chilling |
+| ![](https://github.com/user-attachments/assets/9314104e-375f-49a0-b862-aa9a1bbbf8f5) | [![](https://img.youtube.com/vi/L639zifZP0U/maxresdefault.jpg)](https://youtube.com/live/L639zifZP0U) |
+| Melby-sama reacts to YouTube live chat | [Live Stream Demo](https://youtube.com/live/L639zifZP0U) |
+
+
+
+## 1. Setup
 
 ### 1. Install Poetry
 
@@ -48,3 +59,11 @@ At the root of the project, run:
 ```bash
 poetry run python src/main.py
 ```
+
+### 4. Set up VTube Studio
+1. Downlaod and launch [VTube Studio](https://store.steampowered.com/app/1325860/VTube_Studio/).
+2. Set up the microphone input in Vtube Studio.
+
+### 5. Set up OBS Studio
+1. Add VTube Studio as Game Capture to source.
+2. Add `src/temp/subtitles.txt` as Text to source.
