@@ -1,4 +1,5 @@
 ![banner](https://github.com/user-attachments/assets/18014e27-a881-4ea0-924e-a7b0a3a944aa)
+> This project is built for the [Google Cloud x MLB™ Hackathon – Building with Gemini Models](https://next2025challenge.devpost.com/)
 
 <div align="center">
   <div>
@@ -10,8 +11,6 @@
   
   [![forthebadge](https://forthebadge.com/images/badges/ctrl-c-ctrl-v.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
 </div>
-
-> This project is built for the [Google Cloud x MLB™ Hackathon – Building with Gemini Models](https://next2025challenge.devpost.com/)
 
 ### 👀 Demo
 
