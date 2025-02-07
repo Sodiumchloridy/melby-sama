@@ -52,7 +52,6 @@ You can get the `SPEECH_KEY` and `SPEECH_REGION` by following the steps below:
 3. Get the `SPEECH_KEY` and `SPEECH_REGION` from the resource.
 
 ### 3. Run the project
-
 At the root of the project, run:
 
 ```bash
@@ -61,8 +60,9 @@ poetry run python src/main.py
 
 ### 4. Set up VTube Studio
 1. Downlaod and launch [VTube Studio](https://store.steampowered.com/app/1325860/VTube_Studio/).
-2. Set up the microphone input in Vtube Studio.
+2. Optional (Advanced) : Port the model's output audio into microphone input of Vtube Studio via [Voicemeeter Banana](https://vb-audio.com/Voicemeeter/banana.htm) and [VB Cable](https://vb-audio.com/Cable/).
 
 ### 5. Set up OBS Studio
 1. Add VTube Studio as Game Capture to source.
 2. Add `src/temp/subtitles.txt` as Text to source.
+3. If you previously set up Voicemeeter and VB Cable in Step 4.2, you'll need to configure it here too.
