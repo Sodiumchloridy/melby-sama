@@ -1,7 +1,7 @@
 ![banner](https://github.com/user-attachments/assets/18014e27-a881-4ea0-924e-a7b0a3a944aa)
 > This project is built for the [Google Cloud x MLB™ Hackathon – Building with Gemini Models](https://next2025challenge.devpost.com/)
 
-> This project may also serve as my backup plan as a CS grad if the job market goes south.
+> This project may also serve as my backup plan to become a Twitch streamer if the CS job market goes south.
 > Inspired by the AI VTuber [Neuro-sama](https://www.youtube.com/@Neurosama).
 
 <div align="center">
